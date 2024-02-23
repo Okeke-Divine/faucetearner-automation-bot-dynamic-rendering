@@ -53,15 +53,15 @@ const mineLogic = async (res = null, uname, pswd) => {
     // determine the status code to know if faucetpay is blocking my bot
     const statusCode = response.status();
     if (statusCode == 520) {
-      console.error('Status Code:', statusCode + ' => for uname:' + uname + ' pswd: ******');
-      console.warn('Terminating bot for ' + ' => for uname:' + uname + ' pswd: ******');
+      console.error('[BLOCKED] Status Code:', statusCode + ' => for uname:' + uname + ' pswd: ******');
+      console.warn('[BLOCKED] Terminating bot for ' + ' => for uname:' + uname + ' pswd: ******');
       await browser.close();
       return;
     }
 
     //continue...
 
-    if (console_log == 1) { console.log('faucelearner.org/login.php->opended' + ' => for uname:' + uname + ' pswd: ******'); }
+    // if (console_log == 1) { console.log('faucelearner.org/login.php->opended' + ' => for uname:' + uname + ' pswd: ******'); }
 
     await page.evaluate((uname, pswd) => {
       function apireq(uname, pswd) {
@@ -102,11 +102,11 @@ const mineLogic = async (res = null, uname, pswd) => {
       apireq(uname, pswd);
     }, uname, pswd);
 
-    if (console_log == 1) { console.log('Form submitted using ajax' + ' => for uname:' + uname + ' pswd: ******'); }
+    if (console_log == 1) { console.log('Logging in ' + ' => for uname:' + uname + ' pswd: ******'); }
 
     // Wait for the page to load
     await page.waitForNavigation();
-    if (console_log == 1) { console.log('Page loaded...' + ' => for uname:' + uname + ' pswd: ******'); }
+    // if (console_log == 1) { console.log('Page loaded...' + ' => for uname:' + uname + ' pswd: ******'); }
 
     // Close the first pop-up (if it's not clickable)
     await page.evaluate(() => {
@@ -115,7 +115,7 @@ const mineLogic = async (res = null, uname, pswd) => {
         popup.remove();
       }
     });
-    if (console_log == 1) { console.log('Initial popup removed' + ' => for uname:' + uname + ' pswd: ******'); }
+    // if (console_log == 1) { console.log('Initial popup removed' + ' => for uname:' + uname + ' pswd: ******'); }
 
     // Wait for the pop-up to appear
     await page.waitForSelector('button.btn-info', { timeout: 0 });
@@ -123,7 +123,7 @@ const mineLogic = async (res = null, uname, pswd) => {
     // Click on the "OK" button in the pop-up
     await page.click('button.btn-info');
     if (console_log == 1) {
-      console.log("I just clicked on the second pop_up " + ' => for uname:' + uname + ' pswd: ******');
+      // console.log("I just clicked on the second pop_up " + ' => for uname:' + uname + ' pswd: ******');
     }
     await page.waitForSelector('button.m-auto.mt-2.reqbtn.btn.solid_btn.text-white.d-flex.align-items-center', { timeout: 0 });
 
@@ -180,11 +180,11 @@ const mineLogic = async (res = null, uname, pswd) => {
     if (console_log == 1) { console.log('Injection End' + ' => for uname:' + uname + ' pswd: ******'); }
     let total_uptime_in_seconds = 1;
     setInterval(function(){
-      console.log(total_uptime_in_seconds+' minute(s) gone ' +' => for uname:' + uname + ' pswd: ******');
+      console.log(total_uptime_in_seconds+'/10 minute(s) gone ' +' => for uname:' + uname + ' pswd: ******');
       total_uptime_in_seconds++;
     },60000);
     setTimeout(function(){
-      console.warn('Terminating bot for'+' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
+      console.warn('[TIME UP] Terminating bot for'+' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
       browser.close();
     },600000);
   })
