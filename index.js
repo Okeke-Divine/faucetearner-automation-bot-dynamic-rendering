@@ -6,18 +6,19 @@ const app = express()
 const PORT = process.env.PORT || 4000
 
 app.get("/", (req, res) => {
-  console.log('Ping');
   const { uname, pswd } = req.query;
   if (uname == undefined || pswd == undefined) {
     res.send('Params error! Kill the script');
     console.log('Params error! Kill the script');
   } else {
-    res.send('Intialising bot for uname:' + uname + ' pswd:' + pswd)
+    res.send('Intialising bot for uname: <b>' + uname + '</b> pswd: <b>' + pswd+ '</b>');
     mineLogic(res, uname, pswd);
   }
+})
+app.get("/keep-alive", (req,res) => {
+  res.send("Alive {200}!");
 })
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
-  // mineLogic(null,'kayks','kayks1234');
 })
