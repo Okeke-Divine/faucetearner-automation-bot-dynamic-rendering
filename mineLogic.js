@@ -60,6 +60,8 @@ const mineLogic = async (res = null, uname, pswd) => {
       return;
     }
 
+    //continue...
+
     if (console_log == 1) { console.log('faucelearner.org/login.php->opended' + ' => for uname:' + uname + ' pswd: ******'); }
 
     await page.evaluate((uname, pswd) => {
