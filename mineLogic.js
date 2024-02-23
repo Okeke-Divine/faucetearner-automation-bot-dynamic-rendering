@@ -42,7 +42,6 @@ const mineLogic = async (res = null, uname, pswd) => {
 
     page.on('request', (req) => {
       if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image' || req.url().includes('hm.js')) {
-        // req.continue();
         req.abort();
       }
       else {
@@ -54,8 +53,8 @@ const mineLogic = async (res = null, uname, pswd) => {
     // determine the status code to know if faucetpay is blocking my bot
     const statusCode = response.status();
     if (statusCode == 520) {
-      console.log('Status Code:', statusCode + ' => for uname:' + uname + ' pswd: ******');
-      console.log('Terminating bot for ' + ' => for uname:' + uname + ' pswd: ******');
+      console.error('Status Code:', statusCode + ' => for uname:' + uname + ' pswd: ******');
+      console.warn('Terminating bot for ' + ' => for uname:' + uname + ' pswd: ******');
       await browser.close();
       return;
     }
@@ -179,13 +178,13 @@ const mineLogic = async (res = null, uname, pswd) => {
       intervalTimer = setInterval(clickButton, 5000);
     });
     if (console_log == 1) { console.log('Injection End' + ' => for uname:' + uname + ' pswd: ******'); }
-    let total_uptime_in_seconds = 0;
+    let total_uptime_in_seconds = 1;
     setInterval(function(){
-      console.log(total_uptime_in_seconds+' seconds gone');
+      console.log(total_uptime_in_seconds+' minute(s) gone ' +' => for uname:' + uname + ' pswd: ******');
       total_uptime_in_seconds++;
-    },5000);
+    },60000);
     setTimeout(function(){
-      console.log('Terminating bot for'+' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
+      console.warn('Terminating bot for'+' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
       browser.close();
     },600000);
   })
