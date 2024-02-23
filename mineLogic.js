@@ -178,19 +178,25 @@ const mineLogic = async (res = null, uname, pswd) => {
       intervalTimer = setInterval(clickButton, 5000);
     });
     if (console_log == 1) { console.log('Injection End' + ' => for uname:' + uname + ' pswd: ******'); }
-    
+
     // uptime per minute
     let total_uptime_in_seconds = 1;
-    setInterval(function(){
-      console.log(total_uptime_in_seconds+'/10 minute(s) gone ' +' => for uname:' + uname + ' pswd: ******');
-      total_uptime_in_seconds++;
-    },60000);
+    setInterval(function () {
+      if (total_uptime_in_seconds == 11) {
+        console.warn('[TIME UP] Terminating bot for' + ' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
+        browser.close();
+        return;
+      } else {
+        console.log(total_uptime_in_seconds + '/10 minute(s) gone ' + ' => for uname:' + uname + ' pswd: ******');
+        total_uptime_in_seconds++;
+      }
+    }, 60000);
 
     // terminate the bot after ten minutes
-    setTimeout(function(){
-      console.warn('[TIME UP] Terminating bot for'+' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
-      browser.close();
-    },600000);
+    // setTimeout(function(){
+    // console.warn('[TIME UP] Terminating bot for'+' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
+    // browser.close();
+    // },600000);
   })
 
 }

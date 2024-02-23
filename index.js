@@ -17,6 +17,7 @@ app.get("/", (req, res) => {
 })
 app.get("/keep-alive", (req,res) => {
   res.send("Alive {200}!");
+  console.log("THE SERVER WAS PINGED");
 })
 
 app.listen(PORT, () => {
