@@ -3,6 +3,14 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 require("dotenv").config();
 
+let headlessValue;
+
+if (process.env.NODE_ENV === 'production') {
+    headlessValue = 'new';
+} else {
+    headlessValue = process.env.HEADLESS === 'true' ? false : true;
+}
+
 const mineLogic = async (res = null, uname, pswd) => {
   let console_log = 1;
   console.log('Intialising bot for uname:' + uname + ' pswd:' + pswd);
