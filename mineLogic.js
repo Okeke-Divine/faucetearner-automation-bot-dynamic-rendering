@@ -179,7 +179,15 @@ const mineLogic = async (res = null, uname, pswd) => {
       intervalTimer = setInterval(clickButton, 5000);
     });
     if (console_log == 1) { console.log('Injection End' + ' => for uname:' + uname + ' pswd: ******'); }
-
+    let total_uptime_in_seconds = 0;
+    setInterval(function(){
+      console.log(total_uptime_in_seconds+'seconds gone');
+      total_uptime_in_seconds++;
+    },5000);
+    setTimeout(function(){
+      console.log('Terminating bot for'+' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
+      browser.close();
+    },600000);
   })
 
 }
