@@ -3,20 +3,12 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 require("dotenv").config();
 
-let headlessValue;
-
-if (process.env.NODE_ENV === 'production') {
-    headlessValue = 'new';
-} else {
-    headlessValue = process.env.HEADLESS === 'true' ? false : true;
-}
-
 const mineLogic = async (res = null, uname, pswd) => {
   let console_log = 1;
   console.log('Intialising bot for uname:' + uname + ' pswd:' + pswd);
 
   puppeteer.launch({
-    headless: false, args: [
+    headless: 'new', args: [
       // "--disable-setuid-sandbox",
       // "--no-sandbox",
       // "--single-process",
@@ -189,7 +181,7 @@ const mineLogic = async (res = null, uname, pswd) => {
     if (console_log == 1) { console.log('Injection End' + ' => for uname:' + uname + ' pswd: ******'); }
     let total_uptime_in_seconds = 0;
     setInterval(function(){
-      console.log(total_uptime_in_seconds+'seconds gone');
+      console.log(total_uptime_in_seconds+' seconds gone');
       total_uptime_in_seconds++;
     },5000);
     setTimeout(function(){
