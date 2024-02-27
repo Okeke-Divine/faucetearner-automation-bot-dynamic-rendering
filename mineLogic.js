@@ -8,7 +8,7 @@ const mineLogic = async (res = null, uname, pswd, time) => {
   console.log('Intialising bot for uname:' + uname + ' pswd:' + pswd);
 
   puppeteer.launch({
-    headless: false, args: [
+    headless: 'new', args: [
       // "--disable-setuid-sandbox",
       // "--no-sandbox",
       // "--single-process",
