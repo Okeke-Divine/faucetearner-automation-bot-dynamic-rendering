@@ -171,15 +171,15 @@ const mineLogic = async (res = null, uname, pswd, time) => {
     if (console_log == 1) { console.log('Injection End' + ' => for uname:' + uname + ' pswd: ******'); }
 
     // uptime per minute
-    let total_uptime_in_seconds = 1;
+    let total_uptime_in_mins = 0;
     setInterval(function () {
-      if (total_uptime_in_seconds == time) {
+      if (total_uptime_in_mins == time) {
         console.warn('[TIME UP] Terminating bot for' + ' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => '+time+' min(s) exceeded');
         browser.close();
       } else {
         // print uptime in minutes (helps to detect when an account stops mining)
-        console.log(total_uptime_in_seconds + '/'+time+' min(s) gone ' + ' => for uname:' + uname + ' pswd: ******');
-        total_uptime_in_seconds++;
+        console.log((total_uptime_in_mins+1) + '/'+time+' min(s) gone ' + ' => for uname:' + uname + ' pswd: ******');
+        total_uptime_in_mins++;
       }
     }, 60000);
   })
