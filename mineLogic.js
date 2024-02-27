@@ -8,7 +8,7 @@ const mineLogic = async (res = null, uname, pswd, time) => {
   console.log('Intialising bot for uname:' + uname + ' pswd:' + pswd);
 
   puppeteer.launch({
-    headless: 'new', args: [
+    headless: false, args: [
       // "--disable-setuid-sandbox",
       // "--no-sandbox",
       // "--single-process",
@@ -173,9 +173,12 @@ const mineLogic = async (res = null, uname, pswd, time) => {
     // uptime per minute
     let total_uptime_in_mins = 0;
     setInterval(function () {
-      if (total_uptime_in_mins == time) {
-        console.warn('[TIME UP] Terminating bot for' + ' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => '+time+' min(s) exceeded');
-        browser.close();
+      var randTokend = Math.random() * 9; 
+      if ((total_uptime_in_mins+1) >= time) {
+        console.warn('[TIME UP]['+randTokend+'] Terminating bot for' + ' => for uname:' + uname + ' pswd: ******');
+        if(browser.close()){
+          console.warn('[BC]['+randTokend+'] BROWSER CLOSED FOR for' + ' => for uname:' + uname + ' pswd: ******');
+        }
       } else {
         // print uptime in minutes (helps to detect when an account stops mining)
         console.log((total_uptime_in_mins+1) + '/'+time+' min(s) gone ' + ' => for uname:' + uname + ' pswd: ******');
