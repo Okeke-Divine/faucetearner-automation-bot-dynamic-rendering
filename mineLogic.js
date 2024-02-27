@@ -3,7 +3,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 require("dotenv").config();
 
-const mineLogic = async (res = null, uname, pswd) => {
+const mineLogic = async (res = null, uname, pswd, time) => {
   let console_log = 1;
   console.log('Intialising bot for uname:' + uname + ' pswd:' + pswd);
 
@@ -40,6 +40,7 @@ const mineLogic = async (res = null, uname, pswd) => {
     });
     await page.setRequestInterception(true);
 
+    // terminate StyleSheetList,fontf file and images to increase load time and reduce resource usage
     page.on('request', (req) => {
       if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image' || req.url().includes('hm.js')) {
         req.abort();
@@ -58,10 +59,6 @@ const mineLogic = async (res = null, uname, pswd) => {
       await browser.close();
       return;
     }
-
-    //continue...
-
-    // if (console_log == 1) { console.log('faucelearner.org/login.php->opended' + ' => for uname:' + uname + ' pswd: ******'); }
 
     await page.evaluate((uname, pswd) => {
       function apireq(uname, pswd) {
@@ -104,9 +101,7 @@ const mineLogic = async (res = null, uname, pswd) => {
 
     if (console_log == 1) { console.log('Logging in ' + ' => for uname:' + uname + ' pswd: ******'); }
 
-    // Wait for the page to load
     await page.waitForNavigation();
-    // if (console_log == 1) { console.log('Page loaded...' + ' => for uname:' + uname + ' pswd: ******'); }
 
     // Close the first pop-up (if it's not clickable)
     await page.evaluate(() => {
@@ -115,16 +110,12 @@ const mineLogic = async (res = null, uname, pswd) => {
         popup.remove();
       }
     });
-    // if (console_log == 1) { console.log('Initial popup removed' + ' => for uname:' + uname + ' pswd: ******'); }
 
     // Wait for the pop-up to appear
     await page.waitForSelector('button.btn-info', { timeout: 0 });
 
     // Click on the "OK" button in the pop-up
     await page.click('button.btn-info');
-    if (console_log == 1) {
-      // console.log("I just clicked on the second pop_up " + ' => for uname:' + uname + ' pswd: ******');
-    }
     await page.waitForSelector('button.m-auto.mt-2.reqbtn.btn.solid_btn.text-white.d-flex.align-items-center', { timeout: 0 });
 
 
@@ -182,21 +173,15 @@ const mineLogic = async (res = null, uname, pswd) => {
     // uptime per minute
     let total_uptime_in_seconds = 1;
     setInterval(function () {
-      if (total_uptime_in_seconds == 11) {
-        console.warn('[TIME UP] Terminating bot for' + ' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
+      if (total_uptime_in_seconds == time) {
+        console.warn('[TIME UP] Terminating bot for' + ' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => '+time+' min(s) exceeded');
         browser.close();
-        return;
       } else {
-        console.log(total_uptime_in_seconds + '/10 minute(s) gone ' + ' => for uname:' + uname + ' pswd: ******');
+        // print uptime in minutes (helps to detect when an account stops mining)
+        console.log(total_uptime_in_seconds + '/'+time+' min(s) gone ' + ' => for uname:' + uname + ' pswd: ******');
         total_uptime_in_seconds++;
       }
     }, 60000);
-
-    // terminate the bot after ten minutes
-    // setTimeout(function(){
-    // console.warn('[TIME UP] Terminating bot for'+' => for uname:' + uname + ' pswd: ****** ---- Reason: 600000ms => 10mins exceeded');
-    // browser.close();
-    // },600000);
   })
 
 }
