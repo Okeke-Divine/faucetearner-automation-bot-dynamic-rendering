@@ -3,13 +3,13 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 require("dotenv").config();
 
-const mineLogic = async (res = null, uname, pswd, time, hostUrl) => {
+const mineLogic_browser = async (res = null, uname, pswd, time, hostUrl) => {
   const botPingUrl = hostUrl + "/keep-alive?bot=" + uname;
   let console_log = 1;
   console.log('Intialising bot for uname:' + uname + ' pswd:' + pswd);
 
   puppeteer.launch({
-    headless: 'new', timeout: 240000, args: [
+    headless: 'new', args: [
       // "--disable-setuid-sandbox",
       // "--no-sandbox",
       "--single-process",
@@ -216,7 +216,7 @@ const mineLogic = async (res = null, uname, pswd, time, hostUrl) => {
     // uptime per minute
     let total_uptime_in_mins = 0;
     setInterval(function () {
-      var randTokend = Math.floor(Math.random() * 9) + "-" + Math.floor(Math.random() * 9);
+      var randTokend = Math.random() * 9;
       if ((total_uptime_in_mins + 1) >= time) {
         console.warn('[TIME UP][' + randTokend + '] Terminating bot for' + ' => for uname:' + uname + ' pswd: ******');
         if (browser.close()) {
@@ -235,4 +235,4 @@ const mineLogic = async (res = null, uname, pswd, time, hostUrl) => {
 }
 
 
-module.exports = { mineLogic }
+module.exports = { mineLogic_browser }
