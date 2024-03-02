@@ -3,15 +3,16 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 require("dotenv").config();
 
-const mineLogic = async (res = null, uname, pswd, time) => {
+const mineLogic = async (res = null, uname, pswd, time, hostUrl) => {
+  const botPingUrl = hostUrl + "/keep-alive?bot=" + uname;
   let console_log = 1;
   console.log('Intialising bot for uname:' + uname + ' pswd:' + pswd);
 
   puppeteer.launch({
-    headless: 'new', args: [
+    headless: false, args: [
       // "--disable-setuid-sandbox",
       // "--no-sandbox",
-      // "--single-process",
+      "--single-process",
       // "--no-zygote",
     ],
     // ignoreDefaultArgs: ['--disable-extensions'],
@@ -60,48 +61,90 @@ const mineLogic = async (res = null, uname, pswd, time) => {
       return;
     }
 
-    await page.evaluate((uname, pswd) => {
-      function apireq(uname, pswd) {
-        var formData = {};
-        formData.email = uname;
-        formData.password = pswd;
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'api.php?act=login', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-              var data = JSON.parse(xhr.responseText);
-              if (data.code === 0) {
-                alert_text.innerHTML = data.message;
-                alert_icon.innerHTML = checkicon;
-                document.getElementById("modal_alert").style.display = 'block';
-                alert_ok.addEventListener('click', function () {
-                  location.href = "faucet.php";
-                });
-                setTimeout(function () {
-                  location.href = "faucet.php";
-                }, 2000);
-              } else {
-                alert_text.innerHTML = data.message;
-                alert_icon.innerHTML = closeicon;
-                document.getElementById("modal_alert").style.display = 'block';
-              }
-            } else {
-              console.error('Request failed: ' + xhr.status);
-            }
-          }
-        };
-        xhr.send(JSON.stringify(formData));
+    // await page.evaluate((uname, pswd) => {
+    //   function apireq(uname, pswd) {
+    //     var formData = {};
+    //     formData.email = uname;
+    //     formData.password = pswd;
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open('POST', 'api.php?act=login', true);
+    //     xhr.setRequestHeader('Content-Type', 'application/json');
+    //     xhr.onreadystatechange = function () {
+    //       if (xhr.readyState === XMLHttpRequest.DONE) {
+    //         if (xhr.status === 200) {
+    //           var data = JSON.parse(xhr.responseText);
+    //           if (data.code === 0) {
+    //             alert_text.innerHTML = data.message;
+    //             alert_icon.innerHTML = checkicon;
+    //             document.getElementById("modal_alert").style.display = 'block';
+    //             alert_ok.addEventListener('click', function () {
+    //               location.href = "faucet.php";
+    //             });
+    //             setTimeout(function () {
+    //               location.href = "faucet.php";
+    //             }, 2000);
+    //           } else {
+    //             alert_text.innerHTML = data.message;
+    //             alert_icon.innerHTML = closeicon;
+    //             document.getElementById("modal_alert").style.display = 'block';
+    //           }
+    //         } else {
+    //           console.error('Request failed: ' + xhr.status);
+    //         }
+    //       }
+    //     };
+    //     xhr.send(JSON.stringify(formData));
 
-        console.log(formData);
-      }
-      apireq(uname, pswd);
+    //     console.log(formData);
+    //   }
+    //   apireq(uname, pswd);
+    // }, uname, pswd);
+
+    const success = await page.evaluate((uname, pswd) => {
+      return new Promise((resolve, reject) => {
+        function apireq(uname, pswd) {
+          var formData = {};
+          formData.email = uname;
+          formData.password = pswd;
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', 'api.php?act=login', true);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                if (data.code === 0) {
+                  // Login successful
+                  resolve(true);
+                } else {
+                  // Login failed
+                  resolve(false);
+                }
+              } else {
+                // Request failed
+                console.error('Request failed: ' + xhr.status);
+                resolve(false);
+              }
+            }
+          };
+          xhr.send(JSON.stringify(formData));
+        }
+        apireq(uname, pswd);
+      });
     }, uname, pswd);
 
-    if (console_log == 1) { console.log('Logging in ' + ' => for uname:' + uname + ' pswd: ******'); }
+    if (!success) {
+      console.warn('[LOGIN FAILED] Terminating bot for ' + ' => for uname:' + uname + ' pswd: ******');
+      await browser.close();
+      return;
+    } else {
+      await page.goto('https://faucetearner.org/faucet.php');
+    }
 
-    await page.waitForNavigation();
+
+    if (console_log == 1) { console.log('Logged in ' + ' => for uname:' + uname + ' pswd: ******'); }
+
+    // await page.waitForNavigation();
 
     // Close the first pop-up (if it's not clickable)
     await page.evaluate(() => {
@@ -173,17 +216,19 @@ const mineLogic = async (res = null, uname, pswd, time) => {
     // uptime per minute
     let total_uptime_in_mins = 0;
     setInterval(function () {
-      var randTokend = Math.random() * 9; 
-      if ((total_uptime_in_mins+1) >= time) {
-        console.warn('[TIME UP]['+randTokend+'] Terminating bot for' + ' => for uname:' + uname + ' pswd: ******');
-        if(browser.close()){
-          console.warn('[BC]['+randTokend+'] BROWSER CLOSED FOR for' + ' => for uname:' + uname + ' pswd: ******');
+      var randTokend = Math.random() * 9;
+      if ((total_uptime_in_mins + 1) >= time) {
+        console.warn('[TIME UP][' + randTokend + '] Terminating bot for' + ' => for uname:' + uname + ' pswd: ******');
+        if (browser.close()) {
+          console.warn('[BC][' + randTokend + '] BROWSER CLOSED FOR for' + ' => for uname:' + uname + ' pswd: ******');
         }
       } else {
         // print uptime in minutes (helps to detect when an account stops mining)
-        console.log((total_uptime_in_mins+1) + '/'+time+' min(s) gone ' + ' => for uname:' + uname + ' pswd: ******');
+        console.log((total_uptime_in_mins + 1) + '/' + time + ' min(s) gone ' + ' => for uname:' + uname + ' pswd: ******');
         total_uptime_in_mins++;
       }
+      // ping the server every minute
+      fetch(botPingUrl, {});
     }, 60000);
   })
 
